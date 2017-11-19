@@ -1,0 +1,24 @@
+<!-----------------------------------导航栏------------------------------------>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">拉勾网管理系统</a>
+					<a class="navbar-brand" href="/">首页</a>
+					<a class="navbar-brand" href="#" style="color: #EC971F;">职位管理</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+		            	<% if(username == "") {%>
+		            	<a href="#" data-toggle="modal" data-target="#myLogin">登录</a>
+		            	<%} else {%>
+		            	<a href="#"><%=username%></a>            	
+		            	<%}%>
+		            </li>
+		            <% if(username == "") {%>
+		            <li><a href="#" data-toggle="modal" data-target="#myRegist">注册</a></li>
+		            <%} else {%>
+		            <li><a href="/users/logout" >注销</a></li>
+		            <%}%>
+				</ul>
+			</div>
+		</nav>

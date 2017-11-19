@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>拉购网</title>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+		<script src="/javascripts/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/javascripts/bootstrap.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.css" />
+		<script src="/javascripts/jquery.form.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<!-----------------------------------导航栏------------------------------------>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">拉勾网管理系统</a>
+					<a class="navbar-brand" href="/">首页</a>
+					<a class="navbar-brand" href="#" style="color: #EC971F;">职位管理</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+		            	<% if(username == "") {%>
+		            	<a href="#" data-toggle="modal" data-target="#myLogin">登录</a>
+		            	<%} else {%>
+		            	<a href="#"><%=username%></a>            	
+		            	<%}%>
+		            </li>
+		            <% if(username == "") {%>
+		            <li><a href="#" data-toggle="modal" data-target="#myRegist">注册</a></li>
+		            <%} else {%>
+		            <li><a href="/users/logout" >注销</a></li>
+		            <%}%>
+				</ul>
+			</div>
+		</nav>
+
+		<!------------------------------表格------------------------------------------->
+		<table class="table table-bordered">
+			<caption>职位管理</caption>
+			<a data-toggle="modal" data-target="#myModal" style="float: right;" onclick="addpost()"><span class="glyphicon ">添加</span></a>
+
+			<thead>
+				<tr>
+					<th>序号</th>
+					<th>公司logo</th>
+					<th>职位名称</th>
+					<th>公司名称</th>
+					<th>工作经验</th>
+					<th>职位类型</th>
+					<th>工作地点</th>
+					<th>职位薪资</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<%for(var i = 0;i<goodsList.length;i++){ %>
+				<tr>
+					<td><%= i+1%></td>
+					<td class="img"><img src="<%= goodsList[i].imgUrl%>" alt="" /></td>
+					<td>
+						<%= goodsList[i].postname%>
+					</td>
+					<td>
+						<%= goodsList[i].companyname%>
+					</td>
+					<td>
+						<%= goodsList[i].worktime%>
+					</td>
+					<td>
+						<%= goodsList[i].worktype%>
+					</td>
+					<td>
+						<%= goodsList[i].worksite%>
+					</td>
+					<td>
+						<%= goodsList[i].price%>
+					</td>
+					<td>
+						<!--<a href="#">修改</a>-->
+						<a href="#" class="modification" onclick="updatepost('<%= goodsList[i]._id%>','<%= goodsList[i].postname%>','<%= goodsList[i].companyname%>','<%= goodsList[i].worktime%>','<%= goodsList[i].worktype%>','<%= goodsList[i].worksite%>','<%= goodsList[i].price%>')"><span class="glyphicon " data-toggle="modal" data-target="#myModal">修改</span> </a>
+						<a href="#" class="del" onclick="del('<%= goodsList[i]._id%>')">删除</a>
+					</td>
+				</tr>
+				<%}%>
+			</tbody>
+		</table>
+		<input type="hidden" id="pageNo" value="<%= pageNo%>" />
+		<button class="btn btn-primary" onclick="prePage()">上一页</button>
+		<button class="btn btn-primary" onclick="nextPage()">下一页</button>
+		
+<!--------------------------------------------------员工信息更新模态框--------------------------------->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form id="frm" action="/menu/createJob" method="post" enctype="multipart/form-data" >
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="myModalLabel">职位信息</h4>
+						</div>
+						<input type="hidden" class="form-control" id="post_id" name="post_id" placeholder="">
+						<div class="modal-body">公司logo</div>
+						<div class="modal-body"><input type="file" id="imgUrl" name="imgUrl"/></div>
+	
+						<div class="modal-body">职位名称</div>
+						<div class="modal-body"><input type="text" id="postname" name="postname"/></div>
+	
+						<div class="modal-body">公司名称</div>
+						<div class="modal-body"><input type="text" id="companyname" name="companyname"/></div>
+	
+						<div class="modal-body">工作经验</div>
+						<div class="modal-body"><input type="text" id="worktime" name="worktime"/></div>
+	
+						<div class="modal-body">职位类型</div>
+						<div class="modal-body"><input type="text" id="worktype" name="worktype"/></div>
+	
+						<div class="modal-body">工作地点</div>
+						<div class="modal-body"><input type="text" id="worksite" name="worksite"/></div>
+	
+						<div class="modal-body">职位薪资</div>
+						<div class="modal-body"><input type="text" id="price" name="price"/></div>
+					</form>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" id="submit" onclick="savepost()">提交</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
+		</div>
+
+		<script type="text/javascript">
+			function addpost(){
+				$('#post_id').val('')
+				$('#postname').val('')
+				$('#companyname').val('')
+				$('#worktime').val('')
+				$('#worktype').val('')
+				$('#worksite').val('')
+				$('#price').val('')
+			}
+
+			function updatepost(id,postname,companyname,worktime,worktype,worksite,price){
+				$('#post_id').val(id)
+				$('#postname').val(postname)
+				$('#companyname').val(companyname)
+				$('#worktime').val(worktime)
+				$('#worktype').val(worktype)
+				$('#worksite').val(worksite)
+				$('#price').val(price)
+			}
+			function savepost(){
+				if($("#post_id").val()) {
+					$('#frm').attr("action", "/post/updatePost");
+				} else {
+					$('#frm').attr("action", "/post/createPost");
+				}
+				var options = { 
+					dataType : "json", 
+					/*data: {'file': $("input[type=file]").val(), "username": '123', password: "123"},*/
+					beforeSubmit : function() { 
+						console.log("将来设计一个loading效果"); 
+					}, 
+					success : function(result) { 
+						if(result.code != 1) {
+							alert(result.message);
+							return;
+						}
+						location.reload(true);
+					}, 
+					error : function(result) { 
+					  	console.log("失败");
+					} 
+				}; 
+				$('#frm').ajaxSubmit(options); 
+			}
+
+			function del(id) {
+				if(!confirm("你是否真的要删除？")) {
+					return;
+				}
+				$.ajax({
+					url: "/post/delPost",
+					type: "post",
+					data: {
+						id: id
+					},
+					dataType: "json",
+					success: function(res) {
+						console.log(res);
+						if(res.code != 1) {
+							alert(res.message);
+							return;
+						}
+						location.reload(true);
+					}
+				})
+			}
+			
+			function prePage() {
+				var pageNo = parseInt($("#pageNo").val());
+				--pageNo;
+				if(pageNo < 1) {
+					pageNo = 1;
+				}
+				location.href = '/post?pageNo=' + pageNo;
+			}
+			
+			function nextPage() {
+				var pageNo = parseInt($("#pageNo").val());
+				++pageNo;
+				location.href = '/post?pageNo=' + pageNo;
+			}
+
+//			//点击修改按钮发送ajax查询当前员工的详细信息并添加到模态框中
+//			$("table tbody tr .modification").click(function() {
+//				$.ajax({
+//					type: "get",
+//					url: "/post/edit",
+//					data: {
+//						id: $(this).parent().parent().children("td:nth-of-type(1)").html()
+//					},
+//					dataType: 'json',
+//					success: function(res) {
+//						console.log(res)
+//						$('#myModal #postname').val(res.data.postname);
+//						$('#myModal #companyname').val(res.data.companyname);
+//						$('#myModal #worktime').val(res.data.worktime);
+//						$('#myModal #worktype').val(res.data.worktype);
+//						$('#myModal #worksite').val(res.data.worksite);
+//						$('#myModal #price').val(res.data.price);
+//						$('#myModal #id').html(res.id);
+//					}
+//				});
+//			})
+//			
+//			//点击模态框中更新按钮，发送ajax进行保存请求
+//			$("#update").click(function() {
+//				$.ajax({
+//					type: "post",
+//					url: "/post/update",
+//					data: {
+//						imgUrl:('/images/'+($("#myModal #imgUrl").val().substr($("#myModal #imgUrl").val().lastIndexOf("\\")+1))),
+//						postname:$('#myModal #postname').val(),
+//						companyname:$('#myModal #companyname').val(),
+//						worktime:$('#myModal #worktime').val(),
+//						worktype:$('#myModal #worktype').val(),
+//						worksite:$('#myModal #worksite').val(),
+//						price:$('#myModal #price').val(),
+////						id:$(this).parent().parent().children("table tbody tr td:nth-of-type(1)").html()
+//						id:$('#myModal #id').html()
+//					},
+//					success: function(res) {
+//						console.log(res)
+//						if(res.code!=1){
+//							alert(res.message);
+//							return;
+//						}
+//						alert(res.message)
+//						location.href="/post"
+//					},
+//					error: function (err) {
+//						console.log(err);
+//					}
+//				});
+//			})
+//			
+//			//点击模态框中保存按钮，发送ajax进行向数据库中添加信息请求
+//			$("#save").click(function(){
+//	    		$.ajax({
+//	    			type:"post",
+//	    			url:"/post/create",
+//	    			data:{
+//	    				imgUrl:('/images/'+($("#myModal2 #imgUrl").val().substr($("#myModal2 #imgUrl").val().lastIndexOf("\\")+1))),
+//						postname:$('#myModal2 #postname').val(),
+//						companyname:$('#myModal2 #companyname').val(),
+//						worktime:$('#myModal2 #worktime').val(),
+//						worktype:$('#myModal2 #worktype').val(),
+//						worksite:$('#myModal2 #worksite').val(),
+//						price:$('#myModal2 #price').val(),
+//						flag:0
+//	    				
+//	    			},
+//	    			success:function(res){
+//	    				console.log(res)
+//	    				alert(res);
+//	    				location.href="/post"
+//	    			}
+//	    		});
+//  		})
+//			
+//			//点击删除按钮，进行逻辑删除，只改变flag值，不删除数据库中数据
+//			$("table tbody tr .del").click(function() {
+//				console.log('a')
+//				$.ajax({
+//					type: "post",
+//					url: "/post/del",
+//					data: {
+//						id: $(this).parent().parent().children("td:nth-of-type(1)").html()
+//					},
+//					dataType: 'json',
+//					success: function(res) {
+//						console.log(res)
+//						if(res.code!=1){
+//							alert(res.message);
+//							return;
+//						}
+//						alert(res.message)
+//						location.href="/post"
+//					}
+//				});
+//			})
+			 
+			
+		</script>
+	</body>
+
+</html>

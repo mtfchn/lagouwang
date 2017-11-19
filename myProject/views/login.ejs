@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<title>登录页面</title>
+		<link rel='stylesheet' href='/stylesheets/style.css' />
+		<script src="/javascripts/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/javascripts/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/bootstrap.min.css" />
+	</head>
+
+	<body>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#">管理系统</a>
+					<a class="navbar-brand" href="#">首页</a>
+					<a class="navbar-brand" href="#">职位管理</a>
+				</div>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="#" data-toggle="modal" data-target="#myregist"><span class="glyphicon glyphicon-user"></span> 注册</a>
+					</li>
+					<li>
+						<a href="#" data-toggle="modal" data-target="#mylogin"><span class="glyphicon glyphicon-log-in"></span> 登录</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+
+		<div class="modal fade" id="myregist" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">用户注册</h4>
+					</div>
+					<div class="modal-body">
+							<div class="form-group">
+								<label for="name">用户名</label>
+								<input type="text" class="form-control" id="username" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="name">密码</label>
+								<input type="text" class="form-control" id="password" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="name">密码确认</label>
+								<input type="text" class="form-control" id="password2" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="name">邮箱</label>
+								<input type="text" class="form-control" id="email" placeholder="">
+							</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onclick="regist()">注册</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
+		</div>
+
+		<div class="modal fade" id="mylogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">用户登录</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+								<label for="name">用户名</label>
+								<input type="text" class="form-control" id="username_l" placeholder="">
+							</div>
+
+							<div class="form-group">
+								<label for="name">密码</label>
+								<input type="text" class="form-control" id="password_l" placeholder="">
+							</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onclick="login()">登录</button>
+					</div>
+				</div>
+				<!-- /.modal-content -->
+			</div>
+			<!-- /.modal -->
+		</div>
+		
+		<script type="text/javascript">
+			function regist(){
+				$.ajax({
+					type:"post",
+					url:"/users/regist",
+					data:{
+						username:$('#username').val(),
+						password:$('#password').val(),
+						email:$('#email').val()
+					},
+					dataType:'json',
+					success:function(res){
+						if(res.code !=1){
+							alert(res.message);
+							return;
+						}
+						alert('注册成功');
+						$('#myregist').modal('hide');
+						$('#mylogin').modal('show');
+						$('#username_l').val($('#username').val());
+						$('#password_l').val($('#password').val());
+					}
+				});
+			}
+			
+			function login(){
+				$.ajax({
+					type:"post",
+					url:"/users/login",
+					data:{
+						username:$('#username_l').val(),
+						password:$('#password_l').val(),
+					},
+					dataType:'json',
+					success:function(res){
+						if(res.code !=1){
+							alert(res.message);
+							return;
+						}
+						alert('登录成功');
+						location.href="/post"
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>
